@@ -10,10 +10,10 @@ path {
   fill: #fff;
   stroke-dasharray: 1500;
   opacity: 10;
-  animation: animate 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  animation: animate 1.6s cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 
-/* .st0 {
+.st0 {
   fill: #fff;
   stroke: #ffffff;
   stroke-width: 3;
@@ -21,7 +21,17 @@ path {
 }
 .st1 {
   fill: none;
-} */
+}
+
+.dt0 {
+  fill: #000;
+  stroke: #000000;
+  stroke-width: 3;
+  stroke-miterlimit: 10;
+}
+.dt1 {
+  fill: none;
+}
 
 @keyframes animate {
   0% {
