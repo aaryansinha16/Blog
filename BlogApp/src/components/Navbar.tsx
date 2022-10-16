@@ -18,27 +18,19 @@ import {
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { getUser, loginAction } from '../store/auth/auth.actions';
 
-// const NavLink = ({ children }: { children: ReactNode }) => (
-//   <Link
-//     px={2}
-//     py={1}
-//     rounded={'md'}
-//     _hover={{
-//       textDecoration: 'none',
-//       bg: useColorModeValue('gray.200', 'gray.700'),
-//     }}
-//     href={'#'}>
-//     {children}
-//   </Link>
-// );
 
 export default function Navbar() {
-  let token = localStorage.getItem("user")
   const [test, setTest ] = useState(0)
-
+  const [data ,setData] = useState(null)
+  let local = JSON.parse(localStorage.getItem("user"))
+  
   useEffect(() => {
-  }, [token, test])
+    console.log(local, 'this is localstorage')
+    {local && getUser(local.user._id, local.token).then((res) => setData(res))}
+    // loginAction()().then((res:any) => console.log(res, 'this is navbar'))
+  }, [test])
 
   const handleLogout = () => {
     localStorage.removeItem("user")
@@ -54,7 +46,7 @@ export default function Navbar() {
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              {!token ?
+              {data == null ?
               <>
                 <Button as={NavLink} to='/login' >Login</Button>
                 <Button as={NavLink} to='/signup'>SignUp</Button>

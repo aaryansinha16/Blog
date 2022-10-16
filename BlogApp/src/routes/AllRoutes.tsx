@@ -4,6 +4,7 @@ import Home from '../components/Home'
 import Blog from '../components/Blog'
 import Login from '../components/Login'
 import Signup from '../components/Signup'
+import RequireAuth from './RequireAuth'
 
 function AllRoutes() {
   return (
@@ -11,7 +12,11 @@ function AllRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog" element={
+          <RequireAuth>
+            <Blog/>
+          </RequireAuth>
+        } />
         <Route path="/blog/:title" element={<Signup />} />
     </Routes>
   )

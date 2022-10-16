@@ -17,12 +17,14 @@ import {
   import { useState } from 'react';
   import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
   import { useNavigate } from 'react-router-dom';
-  import {postSignup} from '../auth/api.js'
+import { useDispatch } from 'react-redux';
+import {registerAction} from '../store/auth/auth.actions'
   
   export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const [creds, setCreds] = useState({email:"", password: ""})
 
@@ -35,11 +37,7 @@ import {
     }
 
     const handleSubmit = () => {
-      // console.log(creds)
-      postSignup(creds).then((res:any) => {
-        console.log(res, 'this isres')
-        localStorage.setItem("user", res.token)
-      })
+      dispatch(registerAction(creds)).then((res:any) => console.log(res, 'this is register'))
     }
   
     return (

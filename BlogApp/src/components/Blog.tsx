@@ -15,6 +15,7 @@ import {
   Container,
   VStack,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 interface IBlogTags {
   tags: Array<string>;
@@ -57,6 +58,14 @@ export const BlogAuthor: React.FC<BlogAuthorProps> = (props) => {
 };
 
 const Blog = () => {
+
+  const token = localStorage.getItem("user")
+  const navigate = useNavigate()
+
+  // if(!token){
+  //   navigate("/login")
+  // }
+
   return (
     <Container maxW={'7xl'} p="12">
       <Heading as="h1">Stories by Chakra Templates</Heading>

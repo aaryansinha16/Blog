@@ -13,14 +13,17 @@ import {
     useColorModeValue,
   } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {postLogin} from '../auth/api.js'
+import {loginAction , getUser } from '../store/auth/auth.actions'
   
   export default function Login() {
-    let token = localStorage.getItem("user") || ""
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const [creds, setCreds] = useState({email:"", password: ""})
+    const [render, setRender] = useState<any>(null)
 
     const onChange = (e:any) => {
       const {name, value} = e.target
@@ -28,21 +31,20 @@ import {postLogin} from '../auth/api.js'
         ...creds,
         [name]: value
       })
+      console.log(render,'this is onchange render')
     }
+    const [test ,setTest] = useState(0) 
 
     const handleSubmit = () => {
-      // console.log(creds)
-      postLogin(creds).then((res:any) => {
-        console.log(res, 'this isres')
-        localStorage.setItem("user", res.token)
-      })
+      dispatch(loginAction(creds)).then((res:any) => setRender(res))
+      setTest(test + 1)
     }
     
     useEffect(() => {
-      if(token.length != 0) {
+      if(render != null) {
         return navigate('/blog')
       }
-    }, [token])
+    }, [render, test])
 
 
     return (
