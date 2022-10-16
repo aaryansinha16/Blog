@@ -19,6 +19,7 @@ import {
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getUser, loginAction } from '../store/auth/auth.actions';
+import Logo from './Logo';
 
 
 export default function Navbar() {
@@ -40,9 +41,9 @@ export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4} py={4}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <Box as={NavLink} to='/'>Logo</Box>
+          <Box w='14%' as={NavLink} to='/'><Logo/></Box>
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>

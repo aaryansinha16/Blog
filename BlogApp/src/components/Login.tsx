@@ -41,10 +41,13 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
     }
     
     useEffect(() => {
+    }, [render, test])
+    
+    setTimeout(() => {
       if(render != null) {
         return navigate('/blog')
-      }
-    }, [render, test])
+      } 
+    }, 0)
 
 
     return (
