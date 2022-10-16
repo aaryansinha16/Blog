@@ -22,7 +22,7 @@ app.use(express.json());
 // const blacklist = []
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send('<a href="https://github.com/login/oauth/authorize?client_id=985ffab9d1ad9a4aa4a0">Test</a>');
 });
 
 // Routes: Auth -> Signup, Signin
@@ -121,6 +121,11 @@ app.post("/refresh", async (req, res) => {
   }
 
   // res.send(token)
+})
+
+app.get("/github/callback" , (req, res) => {
+  console.log(req.query.code)
+  res.send("signin with github success")
 })
 
 mongoose.connect("mongodb://127.0.0.1:27017/nem201").then(() => {
