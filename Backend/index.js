@@ -6,6 +6,9 @@ const jwt = require("jsonwebtoken")
 const cors = require("cors");
 const { find } = require("./models/User.model");
 require("dotenv").config()
+const nodemailer = require("nodemailer")
+const otpGenerator = require("otp-generator")
+const OtpModel = require("./models/Otp.model")
 
 const MAIN_KEY = process.env.MAIN_KEY
 const REFRESH_KEY = process.env.REFRESH_KEY
@@ -20,6 +23,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // const blacklist = []
+
+
+// * Below is the code for email service(Ethereal) using nodemailer library.
+//  ! The below credentials for Ethereal mail service is only temperory, thus should be updated from the website during use
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ethereal.email',
+  port: 587,
+  auth: {
+      user: 'kade97@ethereal.email',
+      pass: 'kRghDANHK6gdVKbpPS'
+  }
+});
+
 
 app.get("/", (req, res) => {
   res.send('<a href="https://github.com/login/oauth/authorize?client_id=985ffab9d1ad9a4aa4a0">Test</a>');
@@ -65,6 +81,7 @@ app.get("/users/:id", async (req,res) => {
 
   // TODO: Do this in middlewares
   let blacklist = await BlacklistModel.findOne({mainToken: token})
+  console.log(blacklist, 'this is blacklist from getid', token)
   if(blacklist){
     return res.status(401).send("Token is expired")
   }
@@ -122,6 +139,50 @@ app.post("/refresh", async (req, res) => {
 
   // res.send(token)
 })
+
+
+/*
+ * Below there are 2 endpoints of API, one for getting OTP and other for verifing OTP and reseting the password
+ */
+app.post("/reset-password/getotp", async (req, res) => {
+  // ! Here the email should be in valid email format example-> example@abc.com , not like-> a.com etc.
+  const { email } = req.body;
+  //  ? For creating OTP's otpGenerator npm library is used ->
+  let otp = otpGenerator.generate(6, {
+    upperCaseAlphabets: false,
+    specialChars: false,
+  });
+
+  transporter
+    .sendMail({
+      to: email,
+      from: "b@b.com",
+      subject: "reset-password OTP",
+      text: `Your password reset request is successfull, OTP: ${otp}`,
+    })
+    .then(() => console.log("Email sent"));
+
+  const otpDb = await OtpModel.create({ otp: otp, email: email });
+
+  res.send(otp);
+});
+
+app.post("/reset-password/reset", async (req, res) => {
+  const { email, newPassword, otp } = req.body;
+  const testOtp = await OtpModel.findOne({ email, otp });
+  // * Here if we find the same email with OTP in the otps collection then the can reset the password with new one
+  if (testOtp) {
+    const updatePass = await EmployeeModel.findOneAndUpdate(
+      { email },
+      { password: newPassword }
+    );
+    return res.send("Password updated");
+  } else {
+    return res.status(401).send("INVALID OTP");
+  }
+});
+
+
 
 app.get("/github/callback" , (req, res) => {
   console.log(req.query.code)
