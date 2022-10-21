@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { LOGIN_ERROR, LOGIN_LOADING, LOGIN_SUCCESS, LOGOUT_SUCCESS, REGISTER_ERROR, REGISTER_LOADING, REGISTER_SUCCESS } from "./auth.types";
 
 const initState = {
@@ -49,14 +50,18 @@ export const authReducer = (state=initState, {payload, type}:any) => {
             }
         }
         case LOGIN_SUCCESS:{
+            // const[test, setTest] = useState<any>(JSON.parse(`${localStorage.getItem("user")}`))
+            // console.log(test,"TEST")
+            console.log(payload, "PAYLOAD")
             return {
                 ...state,
                 loading:false,
                 error: false,
-                token: payload.token
+                token: payload._id
             }
         }
         case LOGOUT_SUCCESS: {
+            localStorage.removeItem("user")
             return {
                 ...state,
                 loading:false,

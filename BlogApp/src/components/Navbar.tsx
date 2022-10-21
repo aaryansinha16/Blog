@@ -18,25 +18,33 @@ import {
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { getUser, loginAction } from '../store/auth/auth.actions';
+import { getUser, loginAction, logoutAction } from '../store/auth/auth.actions';
 import LightLogo from './Logo/LightLogo/LightLogo';
 import DarkLogo from './Logo/DarkLogo/DarkLogo';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 export default function Navbar() {
   const [test, setTest ] = useState(0)
   const [data ,setData] = useState(null)
-  let local = JSON.parse(localStorage.getItem("user"))
+  let local = JSON.parse(`${localStorage.getItem("user")}`) || null
+  const dispatch = useDispatch()
+  const abc = useSelector((store:any) => store.auth.token)
+  console.log(abc, "NAVBAR");
   
+  
+  const handleLogout = () => {
+    dispatch(logoutAction())
+    // localStorage.removeItem("user")
+    setTest((prev) => prev + 1)
+  }
+
   useEffect(() => {
-    console.log(local, 'this is localstorage')
-    {local && getUser(local.user._id, local.token).then((res) => setData(res))}
+    // console.log(local, 'this is localstorage')
+    // {local && getUser(local.user._id, local.token).then((res) => setData(res))}
     // loginAction()().then((res:any) => console.log(res, 'this is navbar'))
   }, [test])
 
-  const handleLogout = () => {
-    localStorage.removeItem("user")
-  }
 
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,7 +60,8 @@ export default function Navbar() {
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              {data == null ?
+              <Button as={NavLink} to='/blog' >Blog</Button>
+              {abc.length == 0 ?
               <>
                 <Button as={NavLink} to='/login' >Login</Button>
                 <Button as={NavLink} to='/signup'>SignUp</Button>
