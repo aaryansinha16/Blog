@@ -20,7 +20,7 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
   export default function Login() {
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    const dispatch:any = useDispatch()
 
     const [creds, setCreds] = useState({email:"", password: ""})
     const [render, setRender] = useState<any>(null)
@@ -32,8 +32,8 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
         ...creds,
         [name]: value
       })
-      console.log(render,'this is onchange render')
     }
+    
     const [test ,setTest] = useState(0) 
 
     const handleSubmit = () => {
@@ -47,26 +47,12 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
     }
     
     useEffect(() => {
+      if(render != null) {
+        return navigate('/blog')
+      } 
     }, [render, test])
 
     
-    
-    // setTimeout(() => {
-    //   if(render != null) {
-    //     return navigate('/blog')
-    //   } 
-    // }, 2000)
-
-    
-    const testAction = () => {
-      // let a = JSON.parse(`${localStorage.getItem("user")}`)
-      // const [user, setUser] = useState<any>([], () => {
-      //     const localData = localStorage.getItem('user');
-      //     return localData ? JSON.parse(localData) : [];
-      // });
-      // return user
-    }
-
 
     return (
       <Flex
@@ -81,7 +67,6 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
               to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
             </Text>
           </Stack>
-          <Button onClick={() => console.log(testAction())} >Test</Button>
           <Box
             rounded={'lg'}
             bg={useColorModeValue('white', 'gray.700')}

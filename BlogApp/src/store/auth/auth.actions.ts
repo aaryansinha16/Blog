@@ -9,7 +9,6 @@ export const loginAction = (creds:object) => async (dispatch:any) => {
     return api.post("/login", creds).then((res) => {
         console.log("SUCCESS, ACTIONLOGIN", res.data)
         dispatch({type: LOGIN_SUCCESS, payload: res.data})
-        // navigate("/blog")
         return res.data
     }).catch((e) => {
         console.log("FAILURE", e)
@@ -43,7 +42,16 @@ export const registerAction = (creds:object) => async (dispatch:any) => {
     }
 }
 
-export const logoutAction = () => ({ type: LOGOUT_SUCCESS });
+export const logoutAction = (creds:any) => (dispatch:any) => {
+    return api.post("/logout", creds).then((res) => {
+        console.log("LOGOUT SUCCESS", res.data)
+        dispatch({type: LOGOUT_SUCCESS})
+        return res.data
+    }).catch((e) => {
+        console.log("LOGOUT FAILURE", e)
+        return false
+    })
+}
 
 export const getUser = async (id:string, token:string) => {
     let response = await axios.get(`http://localhost:8080/users/${id}`, {

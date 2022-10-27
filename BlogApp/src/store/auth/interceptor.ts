@@ -10,30 +10,35 @@ const instance = axios.create({
 const user:any = JSON.parse(`${localStorage.getItem("user")}`)
 instance.interceptors.request.use(
   (config:any) => {
+    console.log(config, "CONFIG", user)
+
     if (user) {
       // config.headers["Authorization"] = 'Bearer ' + token;  // for Spring Boot back-end
       config.headers["authorization"] = user.token; // for Node.js Express back-end
     }
+    // localStorage.setItem("user", JSON.stringify(config))
     return config;
   },
   (error) => {
+    localStorage.removeItem("user")
     return Promise.reject(error);
   }
 );
 
 instance.interceptors.response.use(
   async (res) => {
-    var abc:any
     console.log(res.data, 'RES')
     localStorage.setItem("user", JSON.stringify(res.data))
-    await axios.get(`http://localhost:8080/users/${res.data.user._id}`, {
+    let data = await axios.get(`http://localhost:8080/users/${res.data.user._id}`, {
       headers: {authorization : res.data.token}
-    }).then((r) => abc = r)
-    return abc;
+    })
+    
+    return data;
   },
-  async (err) => {
+  async  (err) => {
     const originalConfig = err.config;
     console.log(err, "ERR")
+    // localStorage.removeItem("user")
     // if (originalConfig.url !== "/auth/signin" && err.response) {
     //   // Access Token was expired
     //   if (err.response.status === 401 && !originalConfig._retry) {

@@ -29,8 +29,8 @@ export default function Navbar() {
   const [data ,setData] = useState(null)
   let local = JSON.parse(`${localStorage.getItem("user")}`) || null
   const dispatch = useDispatch()
-  const abc = useSelector((store:any) => store.auth.token)
-  console.log(abc, "NAVBAR");
+  // const abc = useSelector((store:any) => store.auth.token)
+  // console.log(abc, "NAVBAR");
   
   
   const handleLogout = () => {
@@ -61,7 +61,7 @@ export default function Navbar() {
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
               <Button as={NavLink} to='/blog' >Blog</Button>
-              {abc.length == 0 ?
+              { !local ?
               <>
                 <Button as={NavLink} to='/login' >Login</Button>
                 <Button as={NavLink} to='/signup'>SignUp</Button>
