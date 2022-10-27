@@ -5,12 +5,18 @@ import api from '../store/auth/interceptor'
 
 
 const RequireAuth = ({children}:any) => {
-    const local = JSON.parse(`${localStorage.getItem("user")}`) || ""
+    const navigate = useNavigate()
+    const local = JSON.parse(`${localStorage.getItem("user")}`) || null
     console.log(local, 'requireauth')
     let test = false
 
     useEffect(() => {
-        getData()
+        if(local == null){
+            return navigate("/login")
+        }
+        // if(local != null){
+            getData()
+        // }
     }, [])
 
     let getData = () => {
@@ -27,7 +33,6 @@ const RequireAuth = ({children}:any) => {
         
     }
 
-    const navigate = useNavigate()
     
     function abc(){
         if(test){
@@ -35,6 +40,8 @@ const RequireAuth = ({children}:any) => {
         }
         return navigate("/login")
     }
+
+    
 
     return children
 }

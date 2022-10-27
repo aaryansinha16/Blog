@@ -22,28 +22,34 @@ import { getUser, loginAction, logoutAction } from '../store/auth/auth.actions';
 import LightLogo from './Logo/LightLogo/LightLogo';
 import DarkLogo from './Logo/DarkLogo/DarkLogo';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 
 export default function Navbar() {
   const [test, setTest ] = useState(0)
   const [data ,setData] = useState(null)
-  let local = JSON.parse(`${localStorage.getItem("user")}`) || null
-  const dispatch = useDispatch()
-  // const abc = useSelector((store:any) => store.auth.token)
-  // console.log(abc, "NAVBAR");
+  let local:any = JSON.parse(`${localStorage.getItem("user")}`) || null
+  const dispatch:any = useDispatch()
   
   
   const handleLogout = () => {
-    dispatch(logoutAction())
+    dispatch(logoutAction(local.token))
     // localStorage.removeItem("user")
     setTest((prev) => prev + 1)
   }
 
   useEffect(() => {
-    // console.log(local, 'this is localstorage')
-    // {local && getUser(local.user._id, local.token).then((res) => setData(res))}
-    // loginAction()().then((res:any) => console.log(res, 'this is navbar'))
+    if(local != null){
+      console.log(local, "NAVLOCAL")
+      getData().then((res:any) => setData(res))
+    }
   }, [test])
+
+  let getData = () => {
+    return axios.get(`http://localhost:8080/users/${local.user._id}`, {
+        headers : {authorization : local.token}
+    })
+  }
 
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -61,7 +67,7 @@ export default function Navbar() {
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
               <Button as={NavLink} to='/blog' >Blog</Button>
-              { !local ?
+              { data == null ?
               <>
                 <Button as={NavLink} to='/login' >Login</Button>
                 <Button as={NavLink} to='/signup'>SignUp</Button>

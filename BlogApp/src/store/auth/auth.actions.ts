@@ -42,8 +42,10 @@ export const registerAction = (creds:object) => async (dispatch:any) => {
     }
 }
 
-export const logoutAction = (creds:any) => (dispatch:any) => {
-    return api.post("/logout", creds).then((res) => {
+export const logoutAction = (creds:any) => async (dispatch:any) => {
+    return axios.get("http://localhost:8080/logout", {
+        headers: {authorization: creds}
+    }).then((res) => {
         console.log("LOGOUT SUCCESS", res.data)
         dispatch({type: LOGOUT_SUCCESS})
         return res.data

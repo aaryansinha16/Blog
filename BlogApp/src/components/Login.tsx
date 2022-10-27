@@ -12,18 +12,19 @@ import {
     Text,
     useColorModeValue,
   } from '@chakra-ui/react';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {loginAction , getUser } from '../store/auth/auth.actions'
   
   export default function Login() {
-
+    const local:any = JSON.parse(`${localStorage.getItem("user")}`)
     const navigate = useNavigate()
     const dispatch:any = useDispatch()
 
     const [creds, setCreds] = useState({email:"", password: ""})
-    const [render, setRender] = useState<any>(null)
+    const [render, setRender] = useState<any>(false)
 
 
     const onChange = (e:any) => {
@@ -35,22 +36,39 @@ import {loginAction , getUser } from '../store/auth/auth.actions'
     }
     
     const [test ,setTest] = useState(0) 
+    
+    let getData = () => {
+      return axios.get(`http://localhost:8080/users/${local.user._id}`, {
+          headers : {authorization : local.token}
+      })
+    }
 
     const handleSubmit = () => {
       dispatch(loginAction(creds)).then((res:any) => {
         if(res._id.length != 0){
           navigate("/blog")
         }
-        setRender(res)
+        console.log(res, 'LOGINSUB')
+        setRender(true)
       })
       setTest(test + 1)
     }
     
     useEffect(() => {
-      if(render != null) {
-        return navigate('/blog')
-      } 
+      // console.log(local, "LOCAL")
+      if(local != null){
+        getData().then((res) => setRender(true))
+      }
     }, [render, test])
+    
+    useEffect(() => {
+      console.log(render, "OUTSIDE")
+    }, [])
+    
+    if(render){
+      console.log(render, "INSIDE")
+      return navigate("/blog")
+    }
 
     
 
