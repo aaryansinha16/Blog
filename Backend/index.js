@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const UserModel = require("./models/User.model");
 const BlacklistModel = require("./models/Blacklist.model")
+const BlogModel = require("./models/BlogPosts.model")
 const jwt = require("jsonwebtoken")
 const cors = require("cors");
 const { find } = require("./models/User.model");
@@ -61,7 +62,7 @@ app.post("/login",async (req, res) => {
     const token = jwt.sign({email: user.email, age: user.age, id: user._id},
     MAIN_KEY,
     {
-        expiresIn: MAIN_EXP
+        expiresIn: "40 seconds"
     })
 
     const refresh = jwt.sign({email: user.email, id: user._id, age: user.age}, 
@@ -70,7 +71,7 @@ app.post("/login",async (req, res) => {
         expiresIn: REFRESH_EXP
       }
       )
-    res.send({message : "Login success", token, user, refresh})
+    res.send({message : "Login success", token,user, refresh})
 })
 
 app.get("/users/:id", async (req,res) => {
@@ -81,7 +82,7 @@ app.get("/users/:id", async (req,res) => {
 
   // TODO: Do this in middlewares
   let blacklist = await BlacklistModel.findOne({mainToken: token})
-  console.log(blacklist, 'this is blacklist from getid', token)
+  // console.log(blacklist, 'this is blacklist from getid', token)
   if(blacklist){
     return res.status(401).send("Token is expired")
   }
@@ -96,18 +97,18 @@ app.get("/users/:id", async (req,res) => {
   } catch(e){
     if(e.message === 'jwt expired'){
       if(blacklist){
-        res.send("Token is already expired")
+        return res.send("Token is already expired")
       }
       let test = await BlacklistModel.create({mainToken: token})
     }
-    return res.status(401).send("Token is invalid")
+    return res.status(401).send("Token is expired")
   }
 
-  res.send(user)
+  // res.send(user)
 })
 
 
-app.post("/logout" ,async (req, res) => {
+app.get("/logout" ,async (req, res) => {
   const token = req.headers['authorization']
   let findBlacklist = await BlacklistModel.findOne({mainToken: token})
   if(findBlacklist){
@@ -120,7 +121,7 @@ app.post("/logout" ,async (req, res) => {
 })
 
 
-app.post("/refresh", async (req, res) => {
+app.get("/refresh", async (req, res) => {
   const refreshToken = req.headers.authorization
   console.log(refreshToken, 'this is refresh token')
   try {
@@ -129,7 +130,7 @@ app.post("/refresh", async (req, res) => {
     console.log(data,'this is verify data');
 
     const mainToken = jwt.sign({email: data.email, age: data.age, id: data.id}, MAIN_KEY, {
-      expiresIn: MAIN_EXP,
+      expiresIn: "30 seconds",
     });
     console.log(jwt.decode(mainToken),'this is decode');
     res.send({ maintoken: mainToken });
@@ -185,9 +186,26 @@ app.post("/reset-password/reset", async (req, res) => {
 
 
 app.get("/github/callback" , (req, res) => {
-  console.log(req.query.code)
+  // console.log(req.query.code)
   res.send("signin with github success")
 })
+
+
+
+// ? All Blog API->
+app.get("/blogs", async (req, res) => {
+  let data = await BlogModel.find({})
+  res.send(data)
+})
+
+app.get("/blogs/:id", async (req, res) => {
+  // var title = req.params.title.replace("-", " ")
+  var id = req.params.id
+  let data = await BlogModel.findOne({_id: id})
+
+  res.send(data)
+})
+
 
 mongoose.connect("mongodb://127.0.0.1:27017/nem201").then(() => {
   app.listen(8080, () => {

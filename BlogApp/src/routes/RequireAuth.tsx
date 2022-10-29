@@ -11,6 +11,7 @@ const RequireAuth = ({children}:any) => {
     let test = false
 
     useEffect(() => {
+        // ? Below redirect is for the case where there is a new user(visiting for first time) and doesn't has any kind of data in cookies/localstorage/session storage
         if(local == null){
             return navigate("/login")
         }

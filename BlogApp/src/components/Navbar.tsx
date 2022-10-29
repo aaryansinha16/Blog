@@ -34,7 +34,7 @@ export default function Navbar() {
   
   const handleLogout = () => {
     dispatch(logoutAction(local.token))
-    // localStorage.removeItem("user")
+    localStorage.removeItem("user")
     setTest((prev) => prev + 1)
   }
 
@@ -67,7 +67,7 @@ export default function Navbar() {
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
               <Button as={NavLink} to='/blog' >Blog</Button>
-              { data == null ?
+              { data == null || local == null ?
               <>
                 <Button as={NavLink} to='/login' >Login</Button>
                 <Button as={NavLink} to='/signup'>SignUp</Button>

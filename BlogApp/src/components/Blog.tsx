@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Heading,
@@ -16,6 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { getBlogs } from '../store/api';
 
 interface IBlogTags {
   tags: Array<string>;
@@ -37,7 +38,7 @@ const BlogTags: React.FC<IBlogTags> = (props) => {
 };
 
 interface BlogAuthorProps {
-  date: Date;
+  date: any;
   name: string;
 }
 
@@ -52,10 +53,23 @@ export const BlogAuthor: React.FC<BlogAuthorProps> = (props) => {
       />
       <Text fontWeight="medium">{props.name}</Text>
       <Text>—</Text>
-      <Text>{props.date.toLocaleDateString()}</Text>
+      <Text>{props.date}</Text>
     </HStack>
   );
 };
+
+export const ShortDescription = (props:any) => {
+
+  var count = 0
+  var bag = ""
+  for(var i = 0; i<200; i++){
+    bag+= props.desc[i]
+  }
+
+  return (
+    <Text as="p" fontSize="md" marginTop="2">{bag}</Text>
+  )
+}
 
 const Blog = () => {
 
@@ -65,6 +79,11 @@ const Blog = () => {
   // if(!token){
   //   navigate("/login")
   // }
+  const [data, setData] = useState<any>()
+
+  useEffect(() => {
+    getBlogs().then((res) => setData(res))
+  }, [])
 
   return (
     <Container maxW={'7xl'} p="12">
@@ -130,163 +149,55 @@ const Blog = () => {
             ever since the 1500s, when an unknown printer took a galley of type
             and scrambled it to make a type specimen book.
           </Text>
-          <BlogAuthor name="John Doe" date={new Date('2021-04-06T19:01:27Z')} />
+          {/* {console.log(data[0], "DATA")} */}
+          <BlogAuthor name="John Doe" date={data && data[0].published_at} />
         </Box>
       </Box>
       <Heading as="h2" marginTop="5">
         Latest articles
       </Heading>
       <Divider marginTop="5" />
+
+
       <Wrap spacing="30px" marginTop="5">
-        <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }}>
-          <Box w="100%">
-            <Box borderRadius="lg" overflow="hidden">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                <Image
-                  transform="scale(1.0)"
-                  src={
-                    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt="some text"
-                  objectFit="contain"
-                  width="100%"
-                  transition="0.3s ease-in-out"
-                  _hover={{
-                    transform: 'scale(1.05)',
-                  }}
-                />
-              </Link>
-            </Box>
-            <BlogTags tags={['Engineering', 'Product']} marginTop="3" />
-            <Heading fontSize="xl" marginTop="2">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                Some blog title
-              </Link>
-            </Heading>
-            <Text as="p" fontSize="md" marginTop="2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
-            </Text>
-            <BlogAuthor
-              name="John Doe"
-              date={new Date('2021-04-06T19:01:27Z')}
-            />
-          </Box>
-        </WrapItem>
-        <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }}>
-          <Box w="100%">
-            <Box borderRadius="lg" overflow="hidden">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                <Image
-                  transform="scale(1.0)"
-                  src={
-                    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt="some text"
-                  objectFit="contain"
-                  width="100%"
-                  transition="0.3s ease-in-out"
-                  _hover={{
-                    transform: 'scale(1.05)',
-                  }}
-                />
-              </Link>
-            </Box>
-            <BlogTags tags={['Engineering', 'Product']} marginTop="3" />
-            <Heading fontSize="xl" marginTop="2">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                Some blog title
-              </Link>
-            </Heading>
-            <Text as="p" fontSize="md" marginTop="2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
-            </Text>
-            <BlogAuthor
-              name="John Doe"
-              date={new Date('2021-04-06T19:01:27Z')}
-            />
-          </Box>
-        </WrapItem>
-        <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }}>
-          <Box w="100%">
-            <Box borderRadius="lg" overflow="hidden">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                <Image
-                  transform="scale(1.0)"
-                  src={
-                    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt="some text"
-                  objectFit="contain"
-                  width="100%"
-                  transition="0.3s ease-in-out"
-                  _hover={{
-                    transform: 'scale(1.05)',
-                  }}
-                />
-              </Link>
-            </Box>
-            <BlogTags tags={['Engineering', 'Product']} marginTop="3" />
-            <Heading fontSize="xl" marginTop="2">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                Some blog title
-              </Link>
-            </Heading>
-            <Text as="p" fontSize="md" marginTop="2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
-            </Text>
-            <BlogAuthor
-              name="John Doe"
-              date={new Date('2021-04-06T19:01:27Z')}
-            />
-          </Box>
-        </WrapItem>
-        <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }}>
-          <Box w="100%">
-            <Box borderRadius="lg" overflow="hidden">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                <Image
-                  transform="scale(1.0)"
-                  src={
-                    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt="some text"
-                  objectFit="contain"
-                  width="100%"
-                  transition="0.3s ease-in-out"
-                  _hover={{
-                    transform: 'scale(1.05)',
-                  }}
-                />
-              </Link>
-            </Box>
-            <BlogTags tags={['Engineering', 'Product']} marginTop="3" />
-            <Heading fontSize="xl" marginTop="2">
-              <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                Some blog title
-              </Link>
-            </Heading>
-            <Text as="p" fontSize="md" marginTop="2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
-            </Text>
-            <BlogAuthor
-              name="John Doe"
-              date={new Date('2021-04-06T19:01:27Z')}
-            />
-          </Box>
-        </WrapItem>
+
+            {
+              data?.map((item:any) => (
+                <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }} >
+                  <Box w="100%">
+                    <Box borderRadius="lg" overflow="hidden">
+                      <Link href={`/blog/${item._id}`} textDecoration="none" _hover={{ textDecoration: 'none' }}>
+                        <Image
+                          transform="scale(1.0)"
+                          src={item.image}
+                          alt={item.title}
+                          objectFit="contain"
+                          width="100%"
+                          transition="0.3s ease-in-out"
+                          _hover={{
+                            transform: 'scale(1.05)',
+                          }}
+                        />
+                      </Link>
+                    </Box>
+                    <BlogTags tags={['Engineering', 'Product']} marginTop="3" />
+                    <Heading fontSize="xl" marginTop="2">
+                      <Link href={`/blog/${item._id}`} textDecoration="none" _hover={{ textDecoration: 'none' }}>
+                        {item.title}
+                      </Link>
+                    </Heading>
+                    <ShortDescription desc={item.blog_content}/>
+                    <BlogAuthor
+                      name={item.author}
+                      date={item.published_at}
+                    />
+                  </Box>
+                </WrapItem>
+              ) )
+            }
+        
       </Wrap>
+
       <VStack paddingTop="40px" spacing="2" alignItems="flex-start">
         <Heading as="h2">What we write about</Heading>
         <Text as="p" fontSize="lg">

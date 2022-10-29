@@ -7,6 +7,7 @@ import Signup from '../components/Signup'
 import RequireAuth from './RequireAuth'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
+import SingleBlog from './SingleBlog'
 
 function AllRoutes() {
   return (
@@ -19,7 +20,12 @@ function AllRoutes() {
             <Blog/>
           </RequireAuth>
         } />
-        <Route path="/blog/:title" element={<Signup />} />
+        <Route path="/blog/:id" element={
+          <RequireAuth>
+            <SingleBlog/>
+          </RequireAuth>
+        } />
+        <Route path="/signup" element={<Signup />} />
     </Routes>
   )
 }
