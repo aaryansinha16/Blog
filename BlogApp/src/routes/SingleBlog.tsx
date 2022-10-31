@@ -15,6 +15,7 @@ import {
   VisuallyHidden,
   List,
   ListItem,
+  Input,
 } from '@chakra-ui/react';
 import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { MdLocalShipping } from 'react-icons/md';
@@ -22,18 +23,38 @@ import { MdLocalShipping } from 'react-icons/md';
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getSingleBlog } from '../store/api'
+import { io } from 'socket.io-client';
 
+
+const Socket = io.connect("http://localhost:8080")
+let local = JSON.parse(`${localStorage.getItem("user")}`)
 const SingleBlog = () => {
 
     const params = useParams()
-    // var bag = params.id?.replace(" ", "-")
-
     console.log(params.id, "PARAMS")
+
+    const [comment, setComment] = useState<any>("")
+
+    const handleComment = () => {
+      Socket.emit("new message", {
+        comment: comment,
+        user: local.user.email,
+        title: data.title
+      })
+      setComment("")
+    }
     
     const [data, setData] = useState<any>()
 
+    const [cmt, setCmt] = useState<any>([])
+
     useEffect(() => {
       getSingleBlog(params.id).then((res) => setData(res))
+
+      Socket.on("new message", (d:any) => {
+        setCmt(d)
+        console.log("server said", d)
+      })
     }, [])
 
     return (
@@ -196,6 +217,24 @@ const SingleBlog = () => {
               <MdLocalShipping />
               <Text>2-3 business days delivery</Text>
             </Stack>
+
+            <Stack>
+              <Input placeholder='Add a Comment...' onChange={(e) => setComment(e.target.value)}/>
+              <Button onClick={handleComment}>Comment</Button>
+            </Stack>
+            <VStack>
+              {
+                cmt.map((item:any) => (
+                  <>
+                  {console.log(item.title, data.title, "ITEM AND DATA")}
+                  {item.title == data.title} && <Box>
+                    <Text>{item.user}</Text>
+                    <Text>{item.comment}</Text>
+                  </Box>
+                  </>
+                ))
+              }
+            </VStack>
           </Stack>
         </SimpleGrid>
       </Container>

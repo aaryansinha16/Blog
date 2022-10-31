@@ -165,7 +165,7 @@ const Blog = () => {
               data?.map((item:any) => (
                 <WrapItem width={{ base: '100%', sm: '45%', md: '45%', lg: '30%' }} >
                   <Box w="100%">
-                    <Box borderRadius="lg" overflow="hidden">
+                    <Box h='180px' borderRadius="lg" overflow="hidden">
                       <Link href={`/blog/${item._id}`} textDecoration="none" _hover={{ textDecoration: 'none' }}>
                         <Image
                           transform="scale(1.0)"
@@ -173,6 +173,7 @@ const Blog = () => {
                           alt={item.title}
                           objectFit="contain"
                           width="100%"
+                          // h="250px"
                           transition="0.3s ease-in-out"
                           _hover={{
                             transform: 'scale(1.05)',

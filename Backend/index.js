@@ -9,7 +9,9 @@ const { find } = require("./models/User.model");
 require("dotenv").config()
 const nodemailer = require("nodemailer")
 const otpGenerator = require("otp-generator")
-const OtpModel = require("./models/Otp.model")
+const OtpModel = require("./models/Otp.model");
+const { Server } = require("socket.io");
+const http = require("http")
 
 const MAIN_KEY = process.env.MAIN_KEY
 const REFRESH_KEY = process.env.REFRESH_KEY
@@ -19,6 +21,46 @@ const REFRESH_EXP = process.env.REFRESH_EXP
 
 const app = express();
 app.use(cors())
+const server = http.createServer(app)
+
+
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173"
+  }
+})
+
+let totalUser = 0
+let history = []
+io.on("connection" , (conn) => {
+  totalUser+= 1
+  // console.log(conn)
+  console.log("new user connected", totalUser)
+
+  conn.on("new message",async (data) => {
+    console.log(data)
+    history.push(data)
+
+    let blog = await BlogModel.findOne({title: data.title})
+    let newComment = [
+      ...blog.comments,
+      data
+    ]
+
+    let update = await BlogModel.findOneAndUpdate({title: data.title}, {comments: newComment})
+
+    // console.log("BLOG", blog)
+
+    io.emit("new message", history)
+  })
+
+  conn.on("disconnect", () => {
+    totalUser -= 1
+    console.log("user Disconnected", totalUser)
+  })
+})
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -62,7 +104,7 @@ app.post("/login",async (req, res) => {
     const token = jwt.sign({email: user.email, age: user.age, id: user._id},
     MAIN_KEY,
     {
-        expiresIn: "40 seconds"
+        expiresIn: "400 seconds"
     })
 
     const refresh = jwt.sign({email: user.email, id: user._id, age: user.age}, 
@@ -208,7 +250,7 @@ app.get("/blogs/:id", async (req, res) => {
 
 
 mongoose.connect("mongodb://127.0.0.1:27017/nem201").then(() => {
-  app.listen(8080, () => {
+  server.listen(8080, () => {
     console.log("server started at http://localhost:8080");
   });
 }).catch((e) => console.log('THIS IS ERROR', e))
