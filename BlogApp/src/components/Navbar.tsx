@@ -26,7 +26,7 @@ import axios from 'axios';
 
 
 export default function Navbar() {
-  const [test, setTest ] = useState(0)
+  const [test, setTest ] = useState<any>(0)
   const [data ,setData] = useState(null)
   let local:any = JSON.parse(`${localStorage.getItem("user")}`) || null
   const dispatch:any = useDispatch()
@@ -35,7 +35,7 @@ export default function Navbar() {
   const handleLogout = () => {
     dispatch(logoutAction(local.token))
     localStorage.removeItem("user")
-    setTest((prev) => prev + 1)
+    setTest(test + 1)
   }
 
   useEffect(() => {

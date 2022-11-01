@@ -16,14 +16,19 @@ import {
   List,
   ListItem,
   Input,
+  Textarea,
+  Toast,
+  useToast,
 } from '@chakra-ui/react';
 import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { MdLocalShipping } from 'react-icons/md';
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { getSingleBlog } from '../store/api'
 import { io } from 'socket.io-client';
+import SingleBlogCmt from '../components/singleBlog/SingleBlogCmt';
+import Sidebar from '../components/singleBlog/Sidebar';
 
 
 const Socket = io.connect("http://localhost:8080")
@@ -31,22 +36,28 @@ let local = JSON.parse(`${localStorage.getItem("user")}`)
 const SingleBlog = () => {
 
     const params = useParams()
-    console.log(params.id, "PARAMS")
+    // console.log(params.id, "PARAMS")
+    const ref:any = useRef(null)
 
     const [comment, setComment] = useState<any>("")
 
     const handleComment = () => {
-      Socket.emit("new message", {
-        comment: comment,
-        user: local.user.email,
-        title: data.title
-      })
-      setComment("")
+      // console.log(ref.current.value)
+      if(ref.current.value != null || ref.current.value != ""){
+        Socket.emit("new message", {
+          comment: ref.current.value,
+          user: local.user.email,
+          title: data.title
+        })
+      }
+      // setComment("")
     }
     
-    const [data, setData] = useState<any>()
+    const [data, setData] = useState<any>({})
 
     const [cmt, setCmt] = useState<any>([])
+
+    const toast = useToast()
 
     useEffect(() => {
       getSingleBlog(params.id).then((res) => setData(res))
@@ -57,24 +68,29 @@ const SingleBlog = () => {
       })
     }, [])
 
+    // useEffect(() => {
+    //   Socket.on("new message", (d:any, test:any) => {
+    //     console.log(d, "DATA IN SOCKET", test);
+        
+    //     toast({
+    //       title: 'Comment added.',
+    //       description: `A new comment is added in ${test?.title}` ,
+    //       status: 'success',
+    //       duration: 9000,
+    //       isClosable: true,
+    //     })
+    //   })
+    // }, [])
+
     return (
-      <Container maxW={'7xl'}>
+      <Flex w='100%'>
         <SimpleGrid
-          columns={{ base: 1, lg: 2 }}
+          // columns={{ base: 1, lg: 2 }}
+          m='auto'
+          maxW={{base: '90%', lg: '4xl'}}
           spacing={{ base: 8, md: 10 }}
           py={{ base: 18, md: 24 }}>
           <Flex>
-            <Image
-              rounded={'md'}
-              alt={'product image'}
-              src={data?.image}
-              fit={'cover'}
-              align={'center'}
-              w={'100%'}
-              h={{ base: '100%', sm: '400px', lg: '500px' }}
-            />
-          </Flex>
-          <Stack spacing={{ base: 6, md: 10 }}>
             <Box as={'header'}>
               <Heading
                 lineHeight={1.1}
@@ -95,6 +111,17 @@ const SingleBlog = () => {
                 {data?.published_at}
               </Text>
             </Box>
+          </Flex>
+          <Stack spacing={{ base: 6, md: 10 }}>
+          <Image
+              rounded={'md'}
+              alt={'product image'}
+              src={data?.image}
+              fit={'cover'}
+              align={'center'}
+              w={'100%'}
+              h={{ base: '100%', sm: '400px', lg: '500px' }}
+            />
   
             <Stack
               spacing={{ base: 4, sm: 6 }}
@@ -197,47 +224,58 @@ const SingleBlog = () => {
               </Box>
             </Stack>
   
-            <Button
-              rounded={'none'}
-              w={'full'}
-              mt={8}
-              size={'lg'}
-              py={'7'}
-              bg={useColorModeValue('gray.900', 'gray.50')}
-              color={useColorModeValue('white', 'gray.900')}
-              textTransform={'uppercase'}
-              _hover={{
-                transform: 'translateY(2px)',
-                boxShadow: 'lg',
-              }}>
-              Add to cart
-            </Button>
-  
-            <Stack direction="row" alignItems="center" justifyContent={'center'}>
-              <MdLocalShipping />
-              <Text>2-3 business days delivery</Text>
-            </Stack>
 
             <Stack>
-              <Input placeholder='Add a Comment...' onChange={(e) => setComment(e.target.value)}/>
-              <Button onClick={handleComment}>Comment</Button>
+              <VStack justify='flex-start' spacing={6}>
+                <Text fontSize='3xl' w='100%'>Leave a Comment</Text>
+                <Textarea placeholder='Add your thoughts...' ref={ref} aria-label='comment'>
+
+                </Textarea>
+                <Box w='100%'>
+                  <Button colorScheme='telegram' color='white' onClick={handleComment}>Comment</Button>
+                </Box>
+              </VStack>
+
             </Stack>
             <VStack>
+              {/* {
+                data?.comments.map((item:any) => {
+                  console.log(data.comments, "COMMENTS")
+                  if(data.title == item.title){
+                    return (
+                      <SingleBlogCmt {...item}/>
+                    )
+                  }
+                })
+              } */}
               {
-                cmt.map((item:any) => (
-                  <>
-                  {console.log(item.title, data.title, "ITEM AND DATA")}
-                  {item.title == data.title} && <Box>
-                    <Text>{item.user}</Text>
-                    <Text>{item.comment}</Text>
-                  </Box>
-                  </>
-                ))
+                cmt == "" ? 
+                data?.comments?.map((item:any) => {
+                  console.log(data, "DATA")
+                  var count = 0
+                  if(data.title == item.title){
+                    return (
+                      <SingleBlogCmt {...item}/>
+                    )
+                  }
+                })
+                :
+                cmt.map((item:any) => {
+                  if(data.title == item.title){
+                    return (
+                      <SingleBlogCmt {...item}/>
+                    )
+                  }
+                })
               }
             </VStack>
           </Stack>
         </SimpleGrid>
-      </Container>
+        
+        <Box w='30%' m='auto' h='350vh' display={{base: 'none', lg:'block'}}>
+          <Sidebar/>
+        </Box>
+      </Flex>
     )
 }
 

@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { getBlogs } from '../store/api';
+import { io } from 'socket.io-client';
 
 interface IBlogTags {
   tags: Array<string>;
@@ -71,6 +72,7 @@ export const ShortDescription = (props:any) => {
   )
 }
 
+const Socket = io.connect("http://localhost:8080")
 const Blog = () => {
 
   const token = localStorage.getItem("user")
@@ -84,6 +86,20 @@ const Blog = () => {
   useEffect(() => {
     getBlogs().then((res) => setData(res))
   }, [])
+
+  // useEffect(() => {
+  //   Socket.on("new message", (d:any, test:any) => {
+  //     console.log(d, "DATA IN SOCKET", test);
+      
+  //     toast({
+  //       title: 'Comment added.',
+  //       description: `A new comment is added in ${test?.title}` ,
+  //       status: 'success',
+  //       duration: 9000,
+  //       isClosable: true,
+  //     })
+  //   })
+  // }, [])
 
   return (
     <Container maxW={'7xl'} p="12">

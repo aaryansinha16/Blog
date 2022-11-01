@@ -16,14 +16,14 @@ function AllRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/blog" element={
-          <RequireAuth>
+          // <RequireAuth>
             <Blog/>
-          </RequireAuth>
+          // {/* </RequireAuth> */}
         } />
         <Route path="/blog/:id" element={
-          <RequireAuth>
+          // <RequireAuth>
             <SingleBlog/>
-          </RequireAuth>
+          // {/* </RequireAuth> */}
         } />
         <Route path="/signup" element={<Signup />} />
     </Routes>

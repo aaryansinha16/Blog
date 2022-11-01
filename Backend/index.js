@@ -39,7 +39,7 @@ io.on("connection" , (conn) => {
   console.log("new user connected", totalUser)
 
   conn.on("new message",async (data) => {
-    console.log(data)
+    // console.log(data)
     history.push(data)
 
     let blog = await BlogModel.findOne({title: data.title})
@@ -47,12 +47,13 @@ io.on("connection" , (conn) => {
       ...blog.comments,
       data
     ]
+    // console.log("BLOG", blog)
+
 
     let update = await BlogModel.findOneAndUpdate({title: data.title}, {comments: newComment})
 
-    // console.log("BLOG", blog)
 
-    io.emit("new message", history)
+    io.emit("new message", history, data)
   })
 
   conn.on("disconnect", () => {
